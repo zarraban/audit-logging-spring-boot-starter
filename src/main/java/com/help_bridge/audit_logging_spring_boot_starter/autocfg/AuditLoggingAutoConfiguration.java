@@ -21,10 +21,16 @@ import java.util.stream.Stream;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnProperty(prefix = "helpbridge.audit", name = "enabled", havingValue = "true", matchIfMissing = false)
 @EnableConfigurationProperties(AuditLoggerProperties.class)
-public class AuditLoggingAutoConfiguration {
+public class AuditLoggingAutoConfiguration implements org.springframework.web.servlet.config.annotation.WebMvcConfigurer {
+
+    private final AuditLoggerProperties properties;
+
+    public AuditLoggingAutoConfiguration(AuditLoggerProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
-    public AuditLoggerFilter auditLoggerFilter(AuditLoggerProperties properties) {
+    public AuditLoggerFilter auditLoggerFilter() {
         String startTimeAttribute = AuditLoggerFilter.class.getName() + ".START_TIME";
 
         List<LogAttributeContributor> logAttributeContributors = Stream.of(
@@ -34,11 +40,16 @@ public class AuditLoggingAutoConfiguration {
                 new QueryParamsContributor(properties),
                 new ThreadNameContributor(properties),
                 new UserAgentContributor(properties)
-                ).filter(LogAttributeContributor::isEnabled).toList();
+        ).filter(LogAttributeContributor::isEnabled).toList();
 
         return new AuditLoggerFilter(properties,
                 startTimeAttribute,
                 logAttributeContributors
-                );
+        );
+    }
+
+    @Override
+    public void addInterceptors(org.springframework.web.servlet.config.annotation.InterceptorRegistry registry) {
+        registry.addInterceptor(auditLoggerFilter());
     }
 }
