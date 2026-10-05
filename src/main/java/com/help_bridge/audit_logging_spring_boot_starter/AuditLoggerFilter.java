@@ -3,18 +3,18 @@ package com.help_bridge.audit_logging_spring_boot_starter;
 import com.help_bridge.audit_logging_spring_boot_starter.properties.AuditLoggerProperties;
 import com.help_bridge.audit_logging_spring_boot_starter.properties.LogAttributeContributor;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.Nullable;
+import jakarta.servlet.http.HttpServletResponse;import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
-public class AuditLoggerFilter implements HandlerInterceptor {
 
+public class AuditLoggerFilter implements HandlerInterceptor {
+    private final Logger log = LoggerFactory.getLogger(AuditLoggerFilter.class);
     private final List<LogAttributeContributor> contributors;
     private final AuditLoggerProperties properties;
     private final String startTimeAttribute;
