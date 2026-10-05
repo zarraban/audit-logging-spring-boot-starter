@@ -42,7 +42,7 @@ public class AuditLoggerFilter implements HandlerInterceptor {
             context.put("responseTime", timeForTheResponse + " ms");
 
             if (timeForTheResponse > properties.slowThresholdMs()) {
-                log.warn("Response time is slower than threshold set [threshold = {}, actual = {}]", properties.slowThresholdMs(), timeForTheResponse);
+                log.warn("[AUDIT-SLOW] Response time is slower than threshold set [threshold = {}, actual = {}]", properties.slowThresholdMs(), timeForTheResponse);
             }
             request.removeAttribute(startTimeAttribute);
         }
