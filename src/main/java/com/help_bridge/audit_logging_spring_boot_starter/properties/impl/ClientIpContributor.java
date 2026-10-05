@@ -4,14 +4,16 @@ import com.help_bridge.audit_logging_spring_boot_starter.properties.AuditLoggerP
 import com.help_bridge.audit_logging_spring_boot_starter.properties.LogAttributeContributor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
-@RequiredArgsConstructor
+
 public class ClientIpContributor implements LogAttributeContributor {
     private final AuditLoggerProperties properties;
 
+    public ClientIpContributor(AuditLoggerProperties properties){
+        this.properties = properties;
+    }
     @Override
     public boolean isEnabled() {
         return properties.include().clientIp();
