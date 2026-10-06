@@ -80,8 +80,13 @@ class AuditLoggingAutoConfigurationTest {
     void shouldBackOffWhenUserDefinesOwnFilter() {
         webRunner
                 .withPropertyValues("helpbridge.audit.enabled=true")
-                .withBean("auditLoggerFilter", AuditLoggerFilter.class,
+                .withBean("customAuditLoggerFilter", AuditLoggerFilter.class,
                         () -> org.mockito.Mockito.mock(AuditLoggerFilter.class))
-                .run(context -> assertThat(context).hasSingleBean(AuditLoggerFilter.class));
+                .run(context -> {
+                    assertThat(context).hasNotFailed();
+                    assertThat(context).hasSingleBean(AuditLoggerFilter.class);
+                    assertThat(context).hasBean("customAuditLoggerFilter");
+                    assertThat(context).doesNotHaveBean("auditLoggerFilter");
+                });
     }
 }
