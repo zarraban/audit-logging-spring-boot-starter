@@ -3,7 +3,8 @@ package com.help_bridge.audit_logging_spring_boot_starter;
 import com.help_bridge.audit_logging_spring_boot_starter.properties.AuditLoggerProperties;
 import com.help_bridge.audit_logging_spring_boot_starter.properties.LogAttributeContributor;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;import org.jspecify.annotations.Nullable;
+import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -41,7 +42,7 @@ public class AuditLoggerFilter implements HandlerInterceptor {
             Long timeForTheResponse = System.currentTimeMillis() - startTime;
             context.put("responseTime", timeForTheResponse + " ms");
 
-            if (timeForTheResponse > properties.slowThresholdMs()) {
+            if (properties.slowThresholdMs() != null && timeForTheResponse > properties.slowThresholdMs()) {
                 log.warn("[AUDIT-SLOW] Response time is slower than threshold set [threshold = {}, actual = {}]", properties.slowThresholdMs(), timeForTheResponse);
             }
             request.removeAttribute(startTimeAttribute);
@@ -63,4 +64,3 @@ public class AuditLoggerFilter implements HandlerInterceptor {
         log.info("[AUDIT] Audit results: {}", context);
     }
 }
-

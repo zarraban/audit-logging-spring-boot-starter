@@ -24,6 +24,8 @@ class AuditLoggingAutoConfigurationTest {
                     assertThat(context).hasNotFailed();
                     assertThat(context).hasSingleBean(AuditLoggerFilter.class);
                     assertThat(context).hasSingleBean(AuditLoggerProperties.class);
+                    // MvcConfigurer must be present so Spring MVC actually invokes the interceptor
+                    assertThat(context).hasBean("auditLoggerMvcConfigurer");
                 });
     }
 
@@ -32,6 +34,7 @@ class AuditLoggingAutoConfigurationTest {
         webRunner.run(context -> {
             assertThat(context).doesNotHaveBean(AuditLoggerFilter.class);
             assertThat(context).doesNotHaveBean(AuditLoggerProperties.class);
+            assertThat(context).doesNotHaveBean("auditLoggerMvcConfigurer");
         });
     }
 
@@ -39,7 +42,10 @@ class AuditLoggingAutoConfigurationTest {
     void shouldNotRegisterFilterWhenDisabled() {
         webRunner
                 .withPropertyValues("helpbridge.audit.enabled=false")
-                .run(context -> assertThat(context).doesNotHaveBean(AuditLoggerFilter.class));
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean(AuditLoggerFilter.class);
+                    assertThat(context).doesNotHaveBean("auditLoggerMvcConfigurer");
+                });
     }
 
     @Test
@@ -47,7 +53,10 @@ class AuditLoggingAutoConfigurationTest {
         new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(AuditLoggingAutoConfiguration.class))
                 .withPropertyValues("helpbridge.audit.enabled=true")
-                .run(context -> assertThat(context).doesNotHaveBean(AuditLoggerFilter.class));
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean(AuditLoggerFilter.class);
+                    assertThat(context).doesNotHaveBean("auditLoggerMvcConfigurer");
+                });
     }
 
     @Test
@@ -55,7 +64,10 @@ class AuditLoggingAutoConfigurationTest {
         webRunner
                 .withClassLoader(new FilteredClassLoader(OncePerRequestFilter.class))
                 .withPropertyValues("helpbridge.audit.enabled=true")
-                .run(context -> assertThat(context).doesNotHaveBean(AuditLoggerFilter.class));
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean(AuditLoggerFilter.class);
+                    assertThat(context).doesNotHaveBean("auditLoggerMvcConfigurer");
+                });
     }
 
     @Test
@@ -84,9 +96,12 @@ class AuditLoggingAutoConfigurationTest {
                         () -> org.mockito.Mockito.mock(AuditLoggerFilter.class))
                 .run(context -> {
                     assertThat(context).hasNotFailed();
+                    // only the user's bean — auto-configured one backed off
                     assertThat(context).hasSingleBean(AuditLoggerFilter.class);
                     assertThat(context).hasBean("customAuditLoggerFilter");
                     assertThat(context).doesNotHaveBean("auditLoggerFilter");
+                    // MvcConfigurer still present and will use the user's custom bean
+                    assertThat(context).hasBean("auditLoggerMvcConfigurer");
                 });
     }
 }

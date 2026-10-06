@@ -12,6 +12,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -36,11 +38,21 @@ public class AuditLoggingAutoConfiguration {
                 new QueryParamsContributor(properties),
                 new ThreadNameContributor(properties),
                 new UserAgentContributor(properties)
-                ).filter(LogAttributeContributor::isEnabled).toList();
+        ).filter(LogAttributeContributor::isEnabled).toList();
 
         return new AuditLoggerFilter(properties,
                 startTimeAttribute,
                 logAttributeContributors
-                );
+        );
+    }
+
+    @Bean
+    public WebMvcConfigurer auditLoggerMvcConfigurer(AuditLoggerFilter auditLoggerFilter) {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(auditLoggerFilter);
+            }
+        };
     }
 }
