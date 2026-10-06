@@ -6,6 +6,7 @@ import com.help_bridge.audit_logging_spring_boot_starter.properties.LogAttribute
 import com.help_bridge.audit_logging_spring_boot_starter.properties.impl.*;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 public class AuditLoggingAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean
     public AuditLoggerFilter auditLoggerFilter(AuditLoggerProperties properties) {
         String startTimeAttribute = AuditLoggerFilter.class.getName() + ".START_TIME";
 

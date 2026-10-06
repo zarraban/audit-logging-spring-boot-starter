@@ -1,12 +1,13 @@
 package com.help_bridge.audit_logging_spring_boot_starter.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @ConfigurationProperties(prefix = "helpbridge.audit")
 public record AuditLoggerProperties(
         boolean enabled,
         Long slowThresholdMs,
-        Include include
+        @DefaultValue Include include
 ) {
     public record Include(
             boolean clientIp,
