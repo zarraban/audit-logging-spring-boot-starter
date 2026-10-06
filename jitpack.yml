@@ -1,7 +1,7 @@
-before_install:
-  - sdk install maven 3.9.9
-  - sdk use maven 3.9.9
 jdk:
   - openjdk25
+before_install:
+  - sdk install java 25.0.2-open
+  - sdk use java 25.0.2-open
 install:
-  - mvn clean install -DskipTests
+  - source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install maven 3.9.9 && sdk use maven 3.9.9 && mvn clean install -DskipTests
